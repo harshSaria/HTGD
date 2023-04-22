@@ -3925,14 +3925,15 @@ exitP=zeros(42,1);
 throatP=zeros(42,1);
 pcr=zeros(42,1);
 chamberT=zeros(42,1);
-c=1;
-f=fit([x,y],z,'linearinterp'); % sonic
-ff=fit([x,y],zz,'linearinterp'); % rho
-fff=fit([zzz,y],x,'linearinterp'); % enthalpy
-ffff=fit([x,y],zzz,'linearinterp'); % pressure
-gg=fit([zzz,y],zz,'linearinterp'); % pressure
-enthalpy = fit([tt,pp],hh,'linearinterp');
-entropy = fit([tt,pp],ss,'linearinterp');
+c=1; % iterator
+
+f=fit([x,y],z,'linearinterp'); % sonic. EOS for z(x,y). x is enthalpy. y is entropy. z is sonic speed
+ff=fit([x,y],zz,'linearinterp'); % rho(x,y). zz is density
+fff=fit([zzz,y],x,'linearinterp'); % enthalpy(pressure,entropy)
+ffff=fit([x,y],zzz,'linearinterp'); % pressure(enthalpy,entropy)
+gg=fit([zzz,y],zz,'linearinterp'); % density(P,entropy)
+enthalpy = fit([tt,pp],hh,'linearinterp'); %enthalpy(t,p)
+entropy = fit([tt,pp],ss,'linearinterp'); % entropy(t,p)
 
 for Tc=2500:60:5000
 % chamber condition
