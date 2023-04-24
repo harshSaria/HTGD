@@ -4653,7 +4653,7 @@ enthalpy = fit([tt,pp],hh,'linearinterp');
 entropy = fit([tt,pp],ss,'linearinterp');
 temperature=fit([pre,ent],tem,'linearinterp');
 
-for Tc=2500:60:5000
+for Tc=2500:120:5000
 % chamber condition
 Pc = 90; % Kelvin
 of = 5; % oxidizer to fuel ratio
