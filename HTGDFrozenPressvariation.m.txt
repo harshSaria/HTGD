@@ -1,0 +1,168 @@
+% chamber condition
+Tc = 3000; % atm
+of = 5; % oxidizer to fuel ratio
+
+
+Cp=[5.71E+00
+5.67E+00
+5.64E+00
+5.61E+00
+5.59E+00
+5.56E+00
+5.54E+00
+5.51E+00
+5.49E+00
+5.47E+00
+5.45E+00
+5.43E+00
+5.41E+00
+5.39E+00
+5.37E+00
+5.36E+00
+5.34E+00
+5.33E+00
+5.31E+00
+5.30E+00
+5.28E+00
+5.27E+00
+5.26E+00
+5.24E+00
+]; %kJ/kg from CEA
+
+gamma=[1.17E+00
+1.17E+00
+1.17E+00
+1.17E+00
+1.17E+00
+1.17E+00
+1.17E+00
+1.17E+00
+1.17E+00
+1.17E+00
+1.17E+00
+1.17E+00
+1.17E+00
+1.17E+00
+1.18E+00
+1.18E+00
+1.18E+00
+1.18E+00
+1.18E+00
+1.18E+00
+1.18E+00
+1.18E+00
+1.18E+00
+1.18E+00
+];
+
+Pc=[5.00E+01
+5.20E+01
+5.40E+01
+5.60E+01
+5.80E+01
+6.00E+01
+6.20E+01
+6.40E+01
+6.60E+01
+6.80E+01
+7.00E+01
+7.20E+01
+7.40E+01
+7.60E+01
+7.80E+01
+8.00E+01
+8.20E+01
+8.40E+01
+8.60E+01
+8.80E+01
+9.00E+01
+9.20E+01
+9.40E+01
+9.60E+01
+];
+
+R=Cp.*(gamma-1)./gamma; %kJ/kg;
+A_e=0.9;
+A_star=0.042;
+AR=A_e/A_star;
+
+
+ue=zeros(24);
+rhoe=zeros(24);
+mdote=zeros(24);
+Isp=zeros(24);
+Pe=zeros(24);
+Te=zeros(24);
+CPR=zeros(24);
+Pt=zeros(24);
+mach=zeros(24);
+EPR=zeros(24);
+
+for i=1:24
+    errmax=0.0001;
+    err=1;
+    M=1;
+    while err>=errmax
+      F=(1+(gamma(i)-1)*0.5*M^2);
+      G=(gamma(i)+1)/(2*(gamma(i)-1));
+      H=(gamma(i)+1)/2;
+      ARguess=H^(-G)*(F^G)/M;
+      err=abs(AR-ARguess);
+      M=M+0.0000001;
+      if(M>100)
+          break;
+      end
+
+    end
+
+    mach(i)=M;
+    Pe(i)=Pc(i)/F^(gamma(i)/(gamma(i)-1));
+    Te(i)=Tc/F;
+    Pt(i)=Pc(i)/((gamma(i)+1)/2)^(gamma(i)/(gamma(i)-1));
+
+    ue(i)=M*sqrt(gamma(i)*1000*R(i)*Te(i));
+
+    rhoe(i)=Pe(i)*10^5/R(i)/1000/Te(i);
+    mdote(i)=rhoe(i)*ue(i)*A_e;
+
+    Isp(i)=ue(i)/9.81;
+
+    CPR(i)=Pt(i)/Pc(i);
+    EPR(i)=Pe(i)/Pc(i);
+end
+
+
+figure(1)
+plot(Pc,Isp);
+title("Isp vs chamber pressure")
+grid on
+figure(2)
+plot(Pc, Pe);
+title("Exit pressure vs chamber pressure")
+grid on
+figure(3)
+plot(Pc,Pt);
+title("Throat pressure vs chamber pressure")
+grid on
+figure(4)
+plot(Pc,CPR);
+title("Criticl pressure ratio vs chamber pressure")
+grid on
+figure(5)
+plot(Pc,mach);
+title("Mach numer vs chamber pressure")
+grid on
+figure(6)
+plot(Pc,EPR);
+title("Exit presssure ratio vs chamber pressure")
+grid on
+
+
+
+
+
+
+
+
+
+

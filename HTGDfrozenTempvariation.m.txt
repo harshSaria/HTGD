@@ -1,0 +1,207 @@
+% chamber condition
+Pc = 90; % atm
+of = 5; % oxidizer to fuel ratio
+
+hc = [-5.20E+03
+-4.69E+03
+-4.16E+03
+-3.60E+03
+-2.99E+03
+-2.34E+03
+-1.62E+03
+-8.22E+02
+8.12E+01
+1.11E+03
+2.29E+03
+3.64E+03
+5.20E+03
+6.97E+03
+8.96E+03
+1.12E+04
+1.37E+04
+1.64E+04
+1.93E+04
+2.24E+04
+2.56E+04
+]; %  KJ/KG CEA
+
+sc = [1.78E+01
+1.80E+01
+1.82E+01
+1.84E+01
+1.86E+01
+1.88E+01
+1.90E+01
+1.93E+01
+1.95E+01
+1.98E+01
+2.02E+01
+2.05E+01
+2.09E+01
+2.14E+01
+2.19E+01
+2.24E+01
+2.29E+01
+2.35E+01
+2.42E+01
+2.48E+01
+2.55E+01
+]; % KJ/(KG)(K) CEA
+
+Cp=[4.17E+00
+4.33E+00
+4.55E+00
+4.84E+00
+5.21E+00
+5.69E+00
+6.30E+00
+7.07E+00
+8.02E+00
+9.17E+00
+1.05E+01
+1.21E+01
+1.38E+01
+1.57E+01
+1.76E+01
+1.96E+01
+2.15E+01
+2.34E+01
+2.51E+01
+2.65E+01
+2.77E+01
+]; %kJ/kg from CEA
+
+gamma=[1.20E+00
+1.20E+00
+1.19E+00
+1.18E+00
+1.18E+00
+1.17E+00
+1.16E+00
+1.16E+00
+1.15E+00
+1.15E+00
+1.15E+00
+1.15E+00
+1.15E+00
+1.15E+00
+1.15E+00
+1.15E+00
+1.16E+00
+1.16E+00
+1.17E+00
+1.17E+00
+1.18E+00];
+
+Tc=[2.50E+03
+2.62E+03
+2.74E+03
+2.86E+03
+2.98E+03
+3.10E+03
+3.22E+03
+3.34E+03
+3.46E+03
+3.58E+03
+3.70E+03
+3.82E+03
+3.94E+03
+4.06E+03
+4.18E+03
+4.30E+03
+4.42E+03
+4.54E+03
+4.66E+03
+4.78E+03
+4.90E+03
+];
+
+R=Cp.*(gamma-1)./gamma; %kJ/kg;
+A_e=0.9;
+A_star=0.042;
+AR=A_e/A_star;
+
+Tt=zeros(21);
+ue=zeros(21);
+rhoe=zeros(21);
+mdote=zeros(21);
+Isp=zeros(21);
+Pe=zeros(21);
+Te=zeros(21);
+CPR=zeros(21);
+Pt=zeros(21);
+mach=zeros(21);
+EPR=zeros(21);
+
+for i=1:21
+    errmax=0.0001;
+    err=1;
+    M=1;
+    while err>=errmax
+      F=(1+(gamma(i)-1)*0.5*M^2);
+      G=(gamma(i)+1)/(2*(gamma(i)-1));
+      H=(gamma(i)+1)/2;
+      ARguess=H^(-G)*(F^G)/M;
+      err=abs(AR-ARguess);
+      M=M+0.0000001;
+    end
+    Tt(i)=Tc(i)/(gamma(i)+1)*2;
+     
+
+    mach(i)=M;
+    Pe(i)=Pc/F^(gamma(i)/(gamma(i)-1));
+    Te(i)=Tc(i)/F;
+    Pt(i)=Pc/((gamma(i)+1)/2)^(gamma(i)/(gamma(i)-1));
+
+    ue(i)=M*sqrt(gamma(i)*1000*R(i)*Te(i));
+
+    rhoe(i)=Pe(i)*10^5/R(i)/1000/Te(i);
+    mdote(i)=rhoe(i)*ue(i)*A_e;
+
+    Isp(i)=ue(i)/9.81;
+
+    CPR(i)=Pt(i)/Pc;
+    EPR(i)=Pe(i)/Pc;
+end
+
+
+figure(2)
+plot(Tc,Isp);
+title("Isp vs chamber temperature")
+grid on
+figure(3)
+plot(Tc, Pe);
+title("Exit pressure vs chamber temperature")
+grid on
+figure(4)
+plot(Tc,Pt);
+title("Throat pressure vs chamber temperature")
+grid on
+figure(5)
+plot(Tc,CPR);
+title("Criticl pressure ratio vs chamber temperature")
+grid on
+figure(6)
+plot(Tc,mach);
+title("Mach numer vs chamber temperature")
+grid on
+figure(7)
+plot(Tc,EPR);
+title("Exit presssure ratio vs chamber temperature")
+grid on
+figure(8)
+plot(Tc,Tt);
+title("Throat temperature vs chamber temperature")
+grid on
+figure(9)
+plot(Tc, Te);
+title("Exit temperature vs chamber temperature")
+grid on
+
+
+
+
+
+
+
+
