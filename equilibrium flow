@@ -3925,20 +3925,21 @@ exitP=zeros(42,1);
 throatP=zeros(42,1);
 pcr=zeros(42,1);
 chamberT=zeros(42,1);
-c=1; % iterator
+mach=zeros(42,1);
+pip=zeros(42,1);
 
-f=fit([x,y],z,'linearinterp'); % sonic. EOS for z(x,y). x is enthalpy. y is entropy. z is sonic speed
-ff=fit([x,y],zz,'linearinterp'); % rho(x,y). zz is density
-fff=fit([zzz,y],x,'linearinterp'); % enthalpy(pressure,entropy)
-ffff=fit([x,y],zzz,'linearinterp'); % pressure(enthalpy,entropy)
-gg=fit([zzz,y],zz,'linearinterp'); % density(P,entropy)
-enthalpy = fit([tt,pp],hh,'linearinterp'); %enthalpy(t,p)
-entropy = fit([tt,pp],ss,'linearinterp'); % entropy(t,p)
+c=1;
+f=fit([x,y],z,'linearinterp'); % sonic
+ff=fit([x,y],zz,'linearinterp'); % rho
+fff=fit([zzz,y],x,'linearinterp'); % enthalpy
+ffff=fit([x,y],zzz,'linearinterp'); % pressure
+gg=fit([zzz,y],zz,'linearinterp'); % pressure
+enthalpy = fit([tt,pp],hh,'linearinterp');
+entropy = fit([tt,pp],ss,'linearinterp');
 
 for Tc=2500:60:5000
 % chamber condition
-Pc = 91.192; % atm
-%Tc = 3990.9; % Kelvin
+Pc = 90; % Kelvin
 of = 5; % oxidizer to fuel ratio
 hc = enthalpy(Tc,Pc); %  KJ/KG CEA
 sc = entropy(Tc,Pc); % KJ/(KG)(K) CEA
@@ -3988,18 +3989,47 @@ end
 end
 exitP(c)=p;
 throatP(c)=pt;
-mach=v/f(h,sc);
+mach(c)=v/f(h,sc);
 isp(c)=v/9.81;
 pcr(c)=pt/Pc;
 chamberT(c)=Tc;
+pip(c)=Pc/p;
 c=c+1;
 end
 
 figure(1)
 plot(chamberT, exitP)
+title("Exit pressure vs chamber temperature")
+xlabel("chamber temperature (K)")
+ylabel("Exit Pressure (atm)")
+grid on
 figure(2)
 plot(chamberT, isp)
+title("Specific Impulse vs chamber temperature")
+xlabel("Chamber temperature (K)")
+ylabel("Specific Impulse (s)")
+grid on
 figure(3)
 plot(chamberT, throatP)
+title("Throat pressure vs chamber temperature")
+xlabel("Chamber temperature (K)")
+ylabel("Throat Pressure (atm)")
+grid on
 figure(4)
 plot(chamberT, pcr)
+title("Critical Pressure Ratio vs chamber temperature")
+xlabel("Chamber temperature (K)")
+ylabel("Critical Pressure Ratio")
+grid on
+figure(5)
+plot(chamberT, mach)
+title("Mach Number vs chamber temperature")
+xlabel("Chamber temperature (K)")
+ylabel("Mach Number")
+grid on
+figure(6)
+plot(chamberT, pip)
+title("Chamer Pressure/Exit pressure vs chamber temperature")
+xlabel("Chamber temperature (K)")
+ylabel("P_c/P_e")
+grid on
